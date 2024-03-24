@@ -1,0 +1,62 @@
+* Preface: Invalidating Axioms
+
+Not much to note here. Things take time
+
+* Introduction
+
+Architecture is about the important stuff... whatever that is - Ralph Johnson
+
+#+DOWNLOADED: screenshot @ 2024-03-23 19:53:18
+[[file:Introduction/2024-03-23_19-53-18_screenshot.png]]
+
+1. The industry doesn't have a good definition of software
+   architecture itself.
+2. The role of software architect embodies a massive amount and scope
+   of responsibility that continues to expand.
+3. Software architecture is a constantly moving target because of the
+   rapidly evolving software development ecosystem.
+4. Much of the material about software architecture has only
+   historical relevance.
+
+When studying architecture, readers must keep in mind that, like much
+art, it can only be properly understood in context.
+
+** Defining Software Architecture
+
+Architecture characteristics:
+- Availability
+- Reliability
+- Testability
+- Scalability
+- Security
+- Agility
+- Fault Tolerance
+- Elasticity
+- Recoverability
+- Performance
+- Deployability
+- Learnability
+
+Core expectations of a Software Architect:
+- Make architecture decisions
+- Continually analyze the architecture
+- Keep current with latest trends
+- Ensure compliance with decisions
+- Diverse exposure and experience
+- Have business domain knowledge
+- Possess interpersonal skills
+- Understand and navigate politics
+
+All architectures become iterative because of unknown unknowns, Agile
+just recognizes this and does it sooner - Mark Richards
+
+
+#+DOWNLOADED: screenshot @ 2024-03-23 20:18:39
+[[file:Introduction/2024-03-23_20-18-39_screenshot.png]]
+
+* Architectural Thinking
+
+Balancing a portfolio of knowledge regarding depth vs breadth is
+something every developer should consider throughout their career.
+
+* Modularity
