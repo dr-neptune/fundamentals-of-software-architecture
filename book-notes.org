@@ -1,8 +1,8 @@
-* Preface: Invalidating Axioms
+* Part I: Foundations
+** Preface: Invalidating Axioms
 
 Not much to note here. Things take time
-
-* Introduction
+** Introduction
 
 Architecture is about the important stuff... whatever that is - Ralph Johnson
 
@@ -21,7 +21,7 @@ Architecture is about the important stuff... whatever that is - Ralph Johnson
 When studying architecture, readers must keep in mind that, like much
 art, it can only be properly understood in context.
 
-** Defining Software Architecture
+*** Defining Software Architecture
 
 Architecture characteristics:
 - Availability
@@ -53,10 +53,442 @@ just recognizes this and does it sooner - Mark Richards
 
 #+DOWNLOADED: screenshot @ 2024-03-23 20:18:39
 [[file:Introduction/2024-03-23_20-18-39_screenshot.png]]
-
-* Architectural Thinking
+** Architectural Thinking
 
 Balancing a portfolio of knowledge regarding depth vs breadth is
 something every developer should consider throughout their career.
+** Modularity
+** Architecture Characteristics Defined
+** Identifying Architectural Characteristics
+** Measuring and Governing Architecture Characteristics
+** Scope of Architecture Characteristics
+** Component-based Thinking
 
-* Modularity
+* Part II: Architecture Styles
+
+We define an /architecture style/ as the overarching structure of how
+the user interface and backend source code are organized (such as
+within layers of a monolithic deployment or separately deployed
+services) and how that source code interacts with a datastore.
+
+/Architecture patterns/ are lower-level design structures that help form
+specific solutions within an architecture style (such as how to
+achieve high scalability or high performance within a set of
+operations or between sets of services).
+
+** Foundations
+
+*** Big Ball of Mud
+Architects refer to the absence of any discernible architecture
+structure as a /Big Ball of Mud/.
+
+*** Unitary Architecture
+
+The combination of the hardware software. These days it's mostly just
+embedded systems and other highly constrained environments.
+
+*** Client/Server
+
+A fundamental style in which we separate the technical functionality
+between frontend and backend, called a /two-tier,/ or /client/server/
+architecture.
+
+*** Desktop + Database Server
+
+Early personal computer architecture where there is a rich in
+functionality gui that pings back to a separate database server. It
+allowed presentation logic to reside on the desktop, while the more
+computationally intense action occurred on more robust data servers.
+
+*** Browser + Web Server
+
+Modern equivalent of above.
+
+*** Three-tier
+
+Became popular in the 90s. Usually has a database tier, an application
+tier, and a frontend coded in generated html / js.
+
+*** Monolithic vs. Distributed Architectures
+
+- Monolithic
+  - Layered
+  - Pipeline
+  - Microkernel
+
+- Distributed
+  - Service-based
+  - Event-driven
+  - Space-based
+  - Service-oriented
+  - Microservices
+
+Distributed architectures face some fallacies:
+1. The network is reliable
+2. Latency is zero
+3. Bandwidth is infinite
+4. The network is secure
+5. The topology never changes
+6. There is only one administrator
+7. Transport cost is zero
+8. The network is homogenous
+
+In addition to the 8 fallacies above, there are other issues facing
+distributed architectures that aren't present in monolithic
+architectures:
+
+- Distributed logging
+- Distributed transactions
+- Contract maintenance and versioning
+
+** Layered Architecture Style
+
+*Conway's Law* - Organizations that design systems are constrained to
+produce designs which are copies of the communication structures of
+these organizations.
+
+*** Topology
+
+Most consist of 4 standard layers:
+
+
+#+DOWNLOADED: screenshot @ 2024-03-24 15:30:20
+[[file:Part_II:_Architecture_Styles/2024-03-24_15-30-20_screenshot.png]]
+
+MB:
+
+#+DOWNLOADED: screenshot @ 2024-03-24 15:32:18
+[[file:Part_II:_Architecture_Styles/2024-03-24_15-32-18_screenshot.png]]
+
+Rest:
+
+#+DOWNLOADED: screenshot @ 2024-03-24 15:32:36
+[[file:Part_II:_Architecture_Styles/2024-03-24_15-32-36_screenshot.png]]
+
+GPI:
+
+#+DOWNLOADED: screenshot @ 2024-03-24 15:32:50
+[[file:Part_II:_Architecture_Styles/2024-03-24_15-32-50_screenshot.png]]
+
+*** Layers of Isolation
+
+Layers can be /closed/ or /open/. A closed layer means that as a request
+moves top-down from layer to layer, the request can not skip any
+layers, but rather must go through the layer immediately below it to
+get to the next layer.
+
+It would be much faster to allow the presentation layer to access the
+database directly for simple retrieval requests, bypassing any
+unnecessary layers.
+
+The /layers of isolation/ concept means that changes made in one layer
+of the architecture generally don't impact or affect components in
+other layers, providing the contracts between these layers remains
+unchanged. To support layers of isolation, layers involved with the
+major flow of the request necessarily have to be closed. If the
+presentation layer can directly access the persistence layer, then
+changes made to the persistence layer would impact both the business
+layer and the presentation layer, producing a very tightly coupled
+application with layer interdependencies between components.
+
+*** Adding Layers
+
+You can also set up a mix of open and closed layers. An example used
+is creating another open layer (e.g. a common components layer) in
+which some of the parts of the business layer can interact, and other
+parts of the business layer can skip by.
+
+*** Other Considerations
+
+Commonly used as a first pass while architects are figuring out
+whether microservices is the right architecture choice.
+
+One thing to watch out for is the /architecture sinkhole/
+anti-pattern. This happens when requests move from layer to layer as
+simple pass-through processing with no business logic performed within
+each layer. Every layered architecture has some sinkholes. Use the
+80-20 rule (80% non-sinkholes, 20% sinkholes).
+
+*** Why Use This Architecture Style
+- good starting point
+- familiar and simple
+- low cost
+
+#+DOWNLOADED: screenshot @ 2024-03-24 15:46:22
+[[file:Part_II:_Architecture_Styles/2024-03-24_15-46-22_screenshot.png]]
+
+** 18. Choosing the Appropriate Architecture Style
+
+*** Decision Criteria
+
+- The domain
+- Architecture characteristics that impact structure
+- Data architecture
+- Organizational factors
+- Knowledge of process, teams, and operational concerns
+- Domain/architecture isomorphism
+
+Taking these things into acount, the architext must make several
+determinations:
+
+- Monolith vs. Distributed
+- Where should data live?
+- What communication styles between services -- synchronous or
+  asynchronous?
+  - Because synchronous communication presents fewer design,
+    implementation, and debugging challenges, architects should
+    default to synchronous when possible and use asynchronous when
+    necessary.
+** 11. Pipeline Architecture Style
+
+This is the underlying principle behind shells. Many tools that
+utilize mapreduce follow this basic topology.
+
+
+#+DOWNLOADED: screenshot @ 2024-03-24 16:28:34
+[[file:Part_II:_Architecture_Styles/2024-03-24_16-28-34_screenshot.png]]
+
+Pipes in this architecture form the communication channel between
+filters. Each pipe is typically unidirectional and point-to-point for
+performance reasons.
+
+Filters are self-contained, independent from other filters, and
+generally stateless. Filters should perform one task only.
+
+Some types:
+- Producer
+  - starting point of a process
+- Transformer
+  - the map step
+- Tester
+  - the reduce step
+- Consumer
+  - Termination point for the pipeline flow
+
+*** Architecture Characteristics Ratings
+
+
+#+DOWNLOADED: screenshot @ 2024-03-24 16:34:08
+[[file:Part_II:_Architecture_Styles/2024-03-24_16-34-08_screenshot.png]]
+
+** Microkernel Architecture Style
+
+This architecture style is a natural fit for product-based
+applications (packaged and made available for download and
+installation as a single, monolithic deployment, typically installed
+on the customer's site as a third-party product).
+
+
+#+DOWNLOADED: screenshot @ 2024-03-24 16:38:38
+[[file:Part_II:_Architecture_Styles/2024-03-24_16-38-38_screenshot.png]]
+
+Depending on the size and complexity, the core system can be
+implemented as a layered architecture or a modular monolith. It is
+typical for the entire monolithic application to share a single
+database.
+
+
+#+DOWNLOADED: screenshot @ 2024-03-24 16:41:10
+[[file:Part_II:_Architecture_Styles/2024-03-24_16-41-10_screenshot.png]]
+
+
+*** Registry
+
+The core system needs to know about which plug-in modules are
+available and how to get to them. One common way of implementing this
+is through a plug-in registry.
+
+*** Contracts
+
+The contracts between the plug-in components and the core system are
+usually standard across a domain of plug-in compoents and include
+behavior, input data, and output data returned from the plug-in
+component. Custom contracts are usually found in situations where
+plug-in components are developed by a third party where you have no
+control over the contract used by the plug-in.
+
+
+#+DOWNLOADED: screenshot @ 2024-03-24 16:50:18
+[[file:Part_II:_Architecture_Styles/2024-03-24_16-50-18_screenshot.png]]
+
+** Service-Based Architecture Style
+
+Service-based architecture is a hybrid of the microservices
+architecture style and is considered one of the most pragmatic styles,
+mostly due to its architectural flexibility.
+
+*** Topology
+
+A distributed macro layered structure consisting of a separately
+deployed user interface, coarse-grained services, and a monolithic
+database.
+
+
+#+DOWNLOADED: screenshot @ 2024-03-24 16:57:00
+[[file:Part_II:_Architecture_Styles/2024-03-24_16-57-00_screenshot.png]]
+
+Because the services typically share a single monolithic database, the
+number of services within an application context generally range
+between 4 and 12 services, averaging about 7. We can also have as many
+UIs hitting the services as we want and can split the database as
+much as we want:
+
+
+#+DOWNLOADED: screenshot @ 2024-03-24 16:59:39
+[[file:Part_II:_Architecture_Styles/2024-03-24_16-59-39_screenshot.png]]
+
+It is also possible to add an API layer consisting of a reverse proxy
+or gateway between the user interface and services. This is a good
+practice when exposing domain service functionality to external
+systems or when consolidating shared cross-cutting concerns and moving
+them outside of the user interface (such as metrics, security,
+auditing requirements, and service discovery).
+
+
+#+DOWNLOADED: screenshot @ 2024-03-24 17:01:51
+[[file:Part_II:_Architecture_Styles/2024-03-24_17-01-51_screenshot.png]]
+
+****
+**** Reverse Proxies
+A reverse proxy is a server that sits in front of web servers, forwarding client requests. It acts as an intermediary, hiding the origin servers and providing load balancing, SSL termination, caching, compression, and security.
+
+***** Load Balancing
+Distributes client requests to optimize resources and ensure fault tolerance.
+
+***** SSL Termination
+Handles SSL connections, decrypting requests, and passing them to web servers.
+
+***** Caching
+Stores copies of frequently accessed content for faster subsequent requests.
+
+***** Compression
+Compresses server responses to decrease bandwidth usage.
+
+***** Security
+Hides the identity of internal servers and provides defense against attacks.
+
+**** Gateways
+Gateways provide features specific to API traffic management. In the context of APIs, they're known as API gateways.
+
+***** API Management
+Routes API requests, enforces rate limits, and manages API versions.
+
+***** Authentication and Authorization
+Verifies tokens or keys for authorized access.
+
+***** Request and Response Transformation
+Modifies requests and responses, like header manipulation or format conversion.
+
+***** Aggregation
+Combines multiple service responses into one.
+
+**** API Layer
+The API layer is the part of the application where the actual business logic is implemented. It defines the operations exposed to clients.
+
+***** Application-Specific Logic
+Contains the logic for operations provided by the application.
+
+***** Endpoint Definition
+Defines the actual operations available to clients, like data retrieval or record modifications.
+
+***** Direct Interaction with Data
+Interacts directly with databases or storage to manage data.
+
+*** Database Partitioning
+
+Services within a service-based architecture usually share a single,
+monolithic database.
+
+
+#+DOWNLOADED: screenshot @ 2024-03-24 20:21:55
+[[file:Part_II:_Architecture_Styles/2024-03-24_20-21-55_screenshot.png]]
+
+** Event-Driven Architecture Style
+
+Event-driven architecture is a popular distributed asynchronous
+architecture style used to produce highly scalable and high
+performance applications. It is highly adaptable and can be used for
+small applications and large complex ones. It is made up of decoupled
+event processing components that asynchronously receive and process
+events.
+
+Most applications follow what is called a *request-based model*. Requests made to the system to perform some sort of action are
+sent to a request orchestrator. The request orchestrator is typically
+a UI, but it can also be implemented through an API layer or
+enterprise service bus. The role of the request orchestrator is to
+deterministically and synchronously direct the request to various
+request processors. The request processors handle the request, either
+retrieving or updating information in a database.
+
+
+#+DOWNLOADED: screenshot @ 2024-03-24 20:39:33
+[[file:Part_II:_Architecture_Styles/2024-03-24_20-39-33_screenshot.png]]
+
+An *event-based model*, on the other hand, reacts to a particular
+situation and takes action based on that event.
+
+*** Topology
+
+There are 2 primary topologies within event-driven architecture:
+- the mediator topology
+  - commonly used when you require control over the workflow of an
+    event process
+- the broker topology
+  - when you require a high degree of responsiveness and dynamic
+    control over the processing of an event
+
+**** Broker Topology
+
+The broken topology differs from the mediator topology in that there
+is no central event mediator. The message flow is distributed across
+the event processor in a chain-like broadcasting fashion through a
+lightweight message broker (such as RabbitMQ). This is useful when you
+have a relatively simple event processing flow and you do not need
+central event orchestration and coordination.
+
+The event broker is usually federated (multiple domain-based cluster
+instances), where each federated broker contains all of the event
+channels used within the event flow for that particular
+domain. Because of the decoupled async fire-and-forget broadcasting
+nature of the broker topology, topics are usually used in the broker
+topology using a pub-sub message model.
+
+
+#+DOWNLOADED: screenshot @ 2024-03-24 20:45:25
+[[file:Part_II:_Architecture_Styles/2024-03-24_20-45-25_screenshot.png]]
+
+
+#+DOWNLOADED: screenshot @ 2024-03-24 20:50:56
+[[file:Part_II:_Architecture_Styles/2024-03-24_20-50-56_screenshot.png]]
+
+
+|------------------------+----------------------|
+| Advantages             | Disadvantages        |
+|------------------------+----------------------|
+| Highly decoupled event | Workflow control     |
+| processors             |                      |
+| High scalability       | Error handling       |
+| High responsiveness    | Recoverability       |
+| High performance       | Restart capabilities |
+| High fault tolerance   | Data inconsistency   |
+|------------------------+----------------------|
+
+All event processors are highly decoupled and independent of each
+other. The best way to think about it is as a relay race.
+
+**** Mediator Topology
+
+Central to this topology is an event mediator, which manages and
+controls the workflow for initiating events that require the
+coordination of multiple event processors.
+
+The architecture components that make up the mediator topology are:
+- an initiating event
+- an event queue
+- an event mediator
+- event channels
+- event processors
+
+
+#+DOWNLOADED: screenshot @ 2024-03-25 12:51:21
+[[file:Part_II:_Architecture_Styles/2024-03-25_12-51-21_screenshot.png]]
