@@ -70,6 +70,14 @@ Before getting started, make sure you have the following installed:
 
    The backend will be accessible at http://localhost:8000.
 
+
+5. Install Flower using Poetry:
+
+   #+BEGIN_SRC bash
+   poetry add flower
+   #+END_SRC
+
+
 ** Redis Setup
 
 1. Install Redis by following the instructions for your operating system:
@@ -85,7 +93,7 @@ Before getting started, make sure you have the following installed:
 
    Redis will be running on the default port (6379).
 
-** Running the Celery Worker
+** Running the Celery Worker with Flower
 
 1. Make sure you have activated the virtual environment in the backend directory:
 
@@ -100,6 +108,20 @@ Before getting started, make sure you have the following installed:
    #+END_SRC
 
    The Celery worker will start processing tasks.
+
+3. In a new terminal, activate the virtual environment in the backend directory:
+
+   #+BEGIN_SRC bash
+   poetry shell
+   #+END_SRC
+
+4. Start Flower:
+
+   #+BEGIN_SRC bash
+   celery -A celery_worker flower --port=5555
+   #+END_SRC
+
+   Flower will start running on http://localhost:5555.
 
 ** Running the Application
 
