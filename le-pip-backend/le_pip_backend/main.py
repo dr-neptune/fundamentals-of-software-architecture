@@ -1,6 +1,8 @@
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from celery.result import AsyncResult
 from celery_app import celery
+from sklearn.datasets import fetch_openml
 
 app = FastAPI()
 
@@ -17,10 +19,27 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.post('/get_columns')
+async def get_columns(request: Request):
+    data = await request.json()
+    dataset = data.get('dataset')
+
+    match dataset:
+        case 'california_housing':
+            result = celery.send_task('get_dataset_columns', args=[dataset])
+            columns = result.get()
+        case 'ames_housing':
+            data = fetch_openml(name="house_prices", as_frame=True)
+            columns = data.frame.columns.tolist()
+        case _:
+            columns = []
+
+    return columns
+
 @app.post('/process/fast')
 async def process_fast_data(request: Request):
     data = await request.json()
-    dataset = data.get('dataset', 'penguins')
+    dataset = data.get('dataset', 'california_housing')
     result = celery.send_task('process_fast_task', args=[dataset])
     processed_data = result.get()
     return processed_data
@@ -28,7 +47,23 @@ async def process_fast_data(request: Request):
 @app.post('/process/slow')
 async def process_slow_data(request: Request):
     data = await request.json()
-    dataset = data.get('dataset', 'penguins')
+    dataset = data.get('dataset', 'california_housing')
     result = celery.send_task('process_slow_task', args=[dataset])
     processed_data = result.get()
     return processed_data
+
+
+@app.post('/process/parallel')
+async def process_parallel_data(request: Request):
+    data = await request.json()
+    dataset = data.get('dataset', 'california_housing')
+    result = celery.send_task('parallel_processing_task', args=[dataset])
+    return {'task_id': result.id}
+
+@app.get('/process/parallel/{task_id}')
+async def get_parallel_result(task_id: str):
+    async_result = AsyncResult(task_id)
+    if async_result.ready():
+        return async_result.get()
+    else:
+        return {'status': 'PENDING'}

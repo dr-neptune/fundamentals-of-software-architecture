@@ -492,3 +492,30 @@ The architecture components that make up the mediator topology are:
 
 #+DOWNLOADED: screenshot @ 2024-03-25 12:51:21
 [[file:Part_II:_Architecture_Styles/2024-03-25_12-51-21_screenshot.png]]
+
+Unlike the broker topology, event processors within the mediator
+topology do not advertise what they did to the rest of the system.
+
+*Trade-offs*
+
+|---------------------------------+------------------------------------|
+| Advantages over request-based   | Trade-offs                         |
+|                                 |                                    |
+|---------------------------------+------------------------------------|
+| Better response to dynamic user | Only supports eventual consistency |
+| content                         |                                    |
+| Better scalability and          | Less control over processing flow  |
+| elasticity                      |                                    |
+| Better agility and change       | Less certainty over outcome of     |
+| management                      | event flow                         |
+| Better adaptability and         | Difficult to test and debug        |
+| extensibility                   |                                    |
+| Better responsiveness and       |                                    |
+| performance                     |                                    |
+| Better real-time decision       |                                    |
+| making                          |                                    |
+| Better reaction to situational  |                                    |
+| awareness                       |                                    |
+|---------------------------------+------------------------------------|
+
+* Space-Based Architecture Style

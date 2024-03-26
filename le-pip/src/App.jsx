@@ -1,76 +1,173 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import './App.css';
 
 function App() {
-  const [selectedDataset, setSelectedDataset] = useState('penguins');
-  const [fastResult, setFastResult] = useState(null);
-  const [slowResult, setSlowResult] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+    const [selectedDataset, setSelectedDataset] = useState('california_housing');
+    const [fastResult, setFastResult] = useState(null);
+    const [slowResult, setSlowResult] = useState(null);
+    const [parallelResult, setParallelResult] = useState(null);
+    const [linearRegressionResult, setLinearRegressionResult] = useState(null);
+    const [availableColumns, setAvailableColumns] = useState([]);
+    const [selectedColumn, setSelectedColumn] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
 
-  const handleDatasetChange = (event) => {
-    setSelectedDataset(event.target.value);
-  };
+    const handleDatasetChange = (event) => {
+        setSelectedDataset(event.target.value);
+    };
 
-  const handleFastClick = async () => {
-    setLoading(true);
-    setError(null);
+    useEffect(() => {
+        const fetchColumns = async () => {
+            try {
+                const response = await axios.post('/api/get_columns', { dataset: selectedDataset });
+                setAvailableColumns(response.data);
+            } catch (error) {
+                console.error('Error fetching columns:', error);
+            }
+        };
 
-    try {
-      const response = await axios.post('/process/fast', { dataset: selectedDataset });
-      setFastResult(response.data);
-    } catch (error) {
-      setError('Error occurred while processing fast task.');
-    }
+        fetchColumns();
+    }, [selectedDataset]);
 
-    setLoading(false);
-  };
+    const handleLinearRegressionClick = async () => {
+        setLoading(true);
+        setError(null);
 
-  const handleSlowClick = async () => {
-    setLoading(true);
-    setError(null);
+        try {
+            const response = await axios.post('/api/fit_linear_regression', { dataset: selectedDataset, target_column: selectedColumn });
+            setLinearRegressionResult(response.data);
+        } catch (error) {
+            setError('Error occurred while fitting linear regression.');
+        }
 
-    try {
-      const response = await axios.post('/process/slow', { dataset: selectedDataset });
-      setSlowResult(response.data);
-    } catch (error) {
-      setError('Error occurred while processing slow task.');
-    }
+        setLoading(false);
+    };
 
-    setLoading(false);
-  };
+    const handleFastClick = async () => {
+        setLoading(true);
+        setError(null);
 
-  return (
-    <div>
-      <select value={selectedDataset} onChange={handleDatasetChange}>
-        <option value="penguins">Penguins</option>
-        <option value="iris">Iris</option>
-        <option value="titanic">Titanic</option>
-      </select>
-      <button onClick={handleFastClick} disabled={loading}>
-        {loading ? 'Processing...' : 'Process Fast Task'}
-      </button>
-      <button onClick={handleSlowClick} disabled={loading}>
-        {loading ? 'Processing...' : 'Process Slow Task'}
-      </button>
+        try {
+            const response = await axios.post('/api/process/fast', { dataset: selectedDataset });
+            setFastResult(response.data);
+        } catch (error) {
+            setError('Error occurred while processing fast task.');
+        }
 
-      {error && <p>{error}</p>}
+        setLoading(false);
+    };
 
-      {fastResult && (
-        <div>
-          <h2>Fast Task Result:</h2>
-          <pre>{JSON.stringify(fastResult, null, 2)}</pre>
+    const handleSlowClick = async () => {
+        setLoading(true);
+        setError(null);
+
+        try {
+            const response = await axios.post('/api/process/slow', { dataset: selectedDataset });
+            setSlowResult(response.data);
+        } catch (error) {
+            setError('Error occurred while processing slow task.');
+        }
+
+        setLoading(false);
+    };
+
+
+    const handleParallelClick = async () => {
+        setLoading(true);
+        setError(null);
+
+        try {
+            const response = await axios.post('/api/process/parallel', { dataset: selectedDataset });
+            const taskId = response.data.task_id;
+
+            // Poll for the result
+            const pollResult = async () => {
+                const resultResponse = await axios.get(`/api/process/parallel/${taskId}`);
+                if (resultResponse.data.status === 'PENDING') {
+                    setTimeout(pollResult, 1000); // Poll every 1 second
+                } else {
+                    setParallelResult(resultResponse.data);
+                    setLoading(false);
+                }
+            };
+
+            pollResult();
+        } catch (error) {
+            setError('Error occurred while processing data in parallel.');
+            setLoading(false);
+        }
+    };
+
+
+    return (
+        <div className="app">
+            <div className="dataset-select">
+                <label htmlFor="dataset">Select Dataset:</label>
+                <select id="dataset" value={selectedDataset} onChange={handleDatasetChange}>
+                    <option value="california_housing">California Housing</option>
+                    <option value="ames_housing">Ames Housing</option>
+                </select>
+            </div>
+            <div className="buttons">
+                <button onClick={handleFastClick} disabled={loading}>
+                    {loading ? 'Processing...' : 'Process Fast Task'}
+                </button>
+                <button onClick={handleSlowClick} disabled={loading}>
+                    {loading ? 'Processing...' : 'Process Slow Task'}
+                </button>
+            </div>
+            <div className="column-select">
+                <label htmlFor="column">Select Target Column:</label>
+                <select id="column" value={selectedColumn} onChange={(e) => setSelectedColumn(e.target.value)}>
+                    <option value="">Select target column</option>
+                    {availableColumns.map(column => (
+                        <option key={column} value={column}>{column}</option>
+                    ))}
+                </select>
+            </div>
+            <div className="buttons">
+                <button onClick={handleLinearRegressionClick} disabled={loading}>
+                    {loading ? 'Fitting Linear Regression...' : 'Fit Linear Regression'}
+                </button>
+            </div>
+
+            <button onClick={handleParallelClick} disabled={loading}>
+                {loading ? 'Processing in Parallel...' : 'Process in Parallel'}
+            </button>
+
+            {error && <p className="error">{error}</p>}
+
+            {fastResult && (
+                <div className="result">
+                    <h2>Fast Task Result:</h2>
+                    <pre>{JSON.stringify(fastResult, null, 2)}</pre>
+                </div>
+            )}
+
+            {slowResult && (
+                <div className="result">
+                    <h2>Slow Task Result:</h2>
+                    <pre>{JSON.stringify(slowResult, null, 2)}</pre>
+                </div>
+            )}
+
+            {linearRegressionResult && (
+                <div className="result">
+                    <h2>Linear Regression Result:</h2>
+                    <pre>{JSON.stringify(linearRegressionResult, null, 2)}</pre>
+                </div>
+            )}
+
+
+            {parallelResult && (
+                <div className="result">
+                    <h2>Parallel Processing Result:</h2>
+                    <pre>{JSON.stringify(parallelResult, null, 2)}</pre>
+                </div>
+            )}
         </div>
-      )}
-
-      {slowResult && (
-        <div>
-          <h2>Slow Task Result:</h2>
-          <pre>{JSON.stringify(slowResult, null, 2)}</pre>
-        </div>
-      )}
-    </div>
-  );
+    );
 }
 
 export default App;
