@@ -1,0 +1,131 @@
+* Getting Started
+
+This README provides instructions on how to set up and run the
+frontend, backend (using Poetry), and Redis for the application.
+
+** Prerequisites
+
+Before getting started, make sure you have the following installed:
+
+- Node.js (https://nodejs.org)
+- Python (https://www.python.org)
+- Poetry (https://python-poetry.org)
+- Redis (https://redis.io)
+
+** Frontend Setup
+
+1. Navigate to the frontend directory:
+
+   #+BEGIN_SRC bash
+   cd le-pip
+   #+END_SRC
+
+2. Install the dependencies:
+
+   #+BEGIN_SRC bash
+   npm install
+   #+END_SRC
+
+3. Start the development server:
+
+   #+BEGIN_SRC bash
+   npm run dev
+   #+END_SRC
+
+   The frontend will be accessible at http://localhost:5173.
+
+** Backend Setup
+
+1. Navigate to the backend directory:
+
+   #+BEGIN_SRC bash
+   cd le-pip-backend
+   #+END_SRC
+
+2. Install the dependencies using Poetry:
+
+   #+BEGIN_SRC bash
+   poetry install
+   #+END_SRC
+
+3. Activate the virtual environment:
+
+   #+BEGIN_SRC bash
+   poetry shell
+   #+END_SRC
+
+4. Start the FastAPI server:
+
+   #+BEGIN_SRC bash
+   uvicorn main:app --reload --host 0.0.0.0 --port 8000
+   #+END_SRC
+
+   The backend will be accessible at http://localhost:8000.
+
+** Redis Setup
+
+1. Install Redis by following the instructions for your operating system:
+   - Ubuntu: https://redis.io/docs/getting-started/installation/install-redis-on-ubuntu/
+   - macOS: https://redis.io/docs/getting-started/installation/install-redis-on-mac-os/
+   - Windows: https://redis.io/docs/getting-started/installation/install-redis-on-windows/
+
+2. Start the Redis server:
+
+   #+BEGIN_SRC bash
+   redis-server
+   #+END_SRC
+
+   Redis will be running on the default port (6379).
+
+** Running the Celery Worker
+
+1. Make sure you have activated the virtual environment in the backend directory:
+
+   #+BEGIN_SRC bash
+   poetry shell
+   #+END_SRC
+
+2. Start the Celery worker:
+
+   #+BEGIN_SRC bash
+   celery -A celery_worker worker --loglevel=info
+   #+END_SRC
+
+   The Celery worker will start processing tasks.
+
+** Running the Application
+
+1. Make sure the frontend development server is running:
+
+   #+BEGIN_SRC bash
+   cd frontend
+   npm run dev
+   #+END_SRC
+
+2. Make sure the FastAPI server is running:
+
+   #+BEGIN_SRC bash
+   cd backend
+   poetry shell
+   uvicorn main:app --reload
+   #+END_SRC
+
+3. Make sure the Redis server is running:
+
+   #+BEGIN_SRC bash
+   redis-server
+   #+END_SRC
+
+4. Make sure the Celery worker is running:
+
+   #+BEGIN_SRC bash
+   cd backend
+   poetry shell
+   celery -A celery_worker worker --loglevel=info
+   #+END_SRC
+
+5. Open your web browser and visit http://localhost:5173 to access the application.
+
+That's it! You should now have the frontend, backend, Redis, and
+Celery worker up and running. You can interact with the application
+through the frontend UI.
