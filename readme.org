@@ -1,3 +1,11 @@
+* Notes
+
+These are some notes on the book Fundamentals of Software
+Architecture.
+
+At some point I started toying around with some of the ideas in the
+book with python / react `le-pip` and `le-pip-backend`.
+
 * Getting Started
 
 This README provides instructions on how to set up and run the
