@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from celery import Celery
+from celery_app import celery
 
 app = FastAPI()
 
@@ -17,10 +17,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-celery = Celery('tasks', broker='redis://localhost:6379', backend='redis://localhost:6379')
+@app.post('/process/fast')
+async def process_fast_data():
+    result = celery.send_task('process_fast_task')
+    processed_data = result.get()
+    return processed_data
 
-@app.post('/process')
-async def process_data():
-    result = celery.send_task('process_task')
-    processed_data = result.get()  # Wait for the task to complete and retrieve the result
+@app.post('/process/slow')
+async def process_slow_data():
+    result = celery.send_task('process_slow_task')
+    processed_data = result.get()
     return processed_data

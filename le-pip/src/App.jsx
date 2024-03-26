@@ -2,19 +2,34 @@ import React, { useState } from 'react';
 import axios from 'axios';
 
 function App() {
-  const [result, setResult] = useState(null);
+  const [fastResult, setFastResult] = useState(null);
+  const [slowResult, setSlowResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const handleClick = async () => {
+  const handleFastClick = async () => {
     setLoading(true);
     setError(null);
 
     try {
-      const response = await axios.post('/process'); // Remove the full URL here
-      setResult(response.data);
+      const response = await axios.post('/process/fast');
+      setFastResult(response.data);
     } catch (error) {
-      setError('Error occurred while processing data.');
+      setError('Error occurred while processing fast task.');
+    }
+
+    setLoading(false);
+  };
+
+  const handleSlowClick = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await axios.post('/process/slow');
+      setSlowResult(response.data);
+    } catch (error) {
+      setError('Error occurred while processing slow task.');
     }
 
     setLoading(false);
@@ -22,16 +37,26 @@ function App() {
 
   return (
     <div>
-      <button onClick={handleClick} disabled={loading}>
-        {loading ? 'Processing...' : 'Process Data'}
+      <button onClick={handleFastClick} disabled={loading}>
+        {loading ? 'Processing...' : 'Process Fast Task'}
+      </button>
+      <button onClick={handleSlowClick} disabled={loading}>
+        {loading ? 'Processing...' : 'Process Slow Task'}
       </button>
 
       {error && <p>{error}</p>}
 
-      {result && (
+      {fastResult && (
         <div>
-          <h2>Result:</h2>
-          <pre>{JSON.stringify(result, null, 2)}</pre>
+          <h2>Fast Task Result:</h2>
+          <pre>{JSON.stringify(fastResult, null, 2)}</pre>
+        </div>
+      )}
+
+      {slowResult && (
+        <div>
+          <h2>Slow Task Result:</h2>
+          <pre>{JSON.stringify(slowResult, null, 2)}</pre>
         </div>
       )}
     </div>
