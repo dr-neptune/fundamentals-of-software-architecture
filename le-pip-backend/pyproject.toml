@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "le-pip-backend"
+version = "0.1.0"
+description = ""
+authors = ["dr-neptune <mrosedatasci@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.110.0"
+uvicorn = "^0.29.0"
+celery = "^5.3.6"
+redis = "^5.0.3"
+pandas = "^2.2.1"
+ruff-lsp = "^0.0.53"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
