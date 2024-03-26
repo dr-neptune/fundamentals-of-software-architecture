@@ -7,6 +7,7 @@ function App() {
     const [fastResult, setFastResult] = useState(null);
     const [slowResult, setSlowResult] = useState(null);
     const [parallelResult, setParallelResult] = useState(null);
+    const [parallelFitModelsResult, setParallelFitModelsResult] = useState(null);
     const [linearRegressionResult, setLinearRegressionResult] = useState(null);
     const [availableColumns, setAvailableColumns] = useState([]);
     const [selectedColumn, setSelectedColumn] = useState('');
@@ -16,6 +17,25 @@ function App() {
     const handleDatasetChange = (event) => {
         setSelectedDataset(event.target.value);
     };
+
+const handleParallelFitModelsClick = async () => {
+  setLoading(true);
+  setError(null);
+
+  try {
+    const response = await axios.post('/api/fit_models/parallel', {
+      dataset: selectedDataset,
+      target_column: selectedColumn,
+      num_models: 5
+    });
+    setParallelFitModelsResult(response.data);
+    setLoading(false);
+  } catch (error) {
+    setError('Error occurred while fitting models in parallel.');
+    setLoading(false);
+  }
+    };
+
 
     useEffect(() => {
         const fetchColumns = async () => {
@@ -136,6 +156,10 @@ function App() {
                 {loading ? 'Processing in Parallel...' : 'Process in Parallel'}
             </button>
 
+            <button onClick={handleParallelFitModelsClick} disabled={loading}>
+                {loading ? 'Fitting Models in Parallel...' : 'Fit Models in Parallel'}
+            </button>
+
             {error && <p className="error">{error}</p>}
 
             {fastResult && (
@@ -164,6 +188,27 @@ function App() {
                 <div className="result">
                     <h2>Parallel Processing Result:</h2>
                     <pre>{JSON.stringify(parallelResult, null, 2)}</pre>
+                </div>
+            )}
+
+
+            {parallelFitModelsResult && (
+                <div className="result">
+                    <h2>Parallel Model Fitting Result:</h2>
+                    {parallelFitModelsResult.map(result => (
+                        <div key={result.model_id}>
+                            <h3>Model {result.model_id}</h3>
+                            <p>Train Score: {result.train_score}</p>
+                            <p>Test Score: {result.test_score}</p>
+                            <h4>Coefficients:</h4>
+                            <ul>
+                                {Object.entries(result.coefficients).map(([column, coef]) => (
+                                    <li key={column}>{column}: {coef}</li>
+                                ))}
+                            </ul>
+                            <p>Intercept: {result.intercept}</p>
+                        </div>
+                    ))}
                 </div>
             )}
         </div>

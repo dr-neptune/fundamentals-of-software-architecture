@@ -67,3 +67,23 @@ async def get_parallel_result(task_id: str):
         return async_result.get()
     else:
         return {'status': 'PENDING'}
+
+
+@app.post('/fit_models/parallel')
+async def fit_models_parallel(request: Request):
+    data = await request.json()
+    dataset = data.get('dataset', 'california_housing')
+    target_column = data.get('target_column', '')
+    num_models = data.get('num_models', 5)
+    result = celery.send_task('parallel_fit_models_task', args=[dataset, target_column, num_models])
+    model_results = result.get()
+    return model_results
+
+
+@app.get('/fit_models/parallel/{task_id}')
+async def get_parallel_fit_result(task_id: str):
+    async_result = AsyncResult(task_id)
+    if async_result.ready():
+        return async_result.get()
+    else:
+        return {'status': 'PENDING'}

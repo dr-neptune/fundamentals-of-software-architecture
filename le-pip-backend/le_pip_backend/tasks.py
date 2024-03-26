@@ -8,7 +8,6 @@ from sklearn.datasets import fetch_openml
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
 
-
 @celery.task(name='process_fast_task')
 def process_fast_task(dataset):
     match dataset:
@@ -94,6 +93,7 @@ def fit_linear_regression_task(dataset, target_column):
     }
     return result
 
+
 @celery.task(name='parallel_processing_task')
 def parallel_processing_task(dataset):
     # Define the number of parallel tasks to run
@@ -120,4 +120,64 @@ def process_data_task(dataset):
             result = data.frame.describe().to_dict()
         case _:
             result = {'error': 'Invalid dataset selected'}
+    return result
+
+
+@celery.task(name='parallel_fit_models_task')
+def parallel_fit_models_task(dataset, target_column, num_models):
+    # Create a group of tasks to fit models in parallel
+    task_group = group([fit_model_task.s(dataset, target_column, i) for i in range(num_models)])
+
+    # Execute the tasks in parallel and return the async result
+    async_result = task_group.apply_async()
+
+    return async_result.id  # Return the async result ID
+
+@celery.task(name='fit_model_task')
+def fit_model_task(dataset, target_column, model_id):
+    match dataset:
+        case 'california_housing':
+            data = fetch_california_housing(as_frame=True)
+        case 'ames_housing':
+            data = fetch_openml(name="house_prices", as_frame=True)
+        case _:
+            return {'error': 'Invalid dataset selected'}
+
+    if target_column not in data.frame.columns:
+        return {'error': 'Invalid target column selected'}
+
+    if not pd.api.types.is_numeric_dtype(data.frame[target_column]):
+        return {'error': 'Target column must be numeric'}
+
+    X = data.frame.drop(columns=[target_column])
+    y = data.frame[target_column]
+
+    numeric_columns = X.select_dtypes(include=[np.number]).columns
+    X = X[numeric_columns]
+
+    # Split the data into random subsets for each model
+    subset_size = len(X) // num_models
+    start_index = model_id * subset_size
+    end_index = (model_id + 1) * subset_size
+    X_subset = X[start_index:end_index]
+    y_subset = y[start_index:end_index]
+
+    X_train, X_test, y_train, y_test = train_test_split(X_subset, y_subset, test_size=0.2, random_state=42)
+
+    model = LinearRegression()
+    model.fit(X_train, y_train)
+
+    train_score = model.score(X_train, y_train)
+    test_score = model.score(X_test, y_test)
+
+    coefficients = dict(zip(X.columns, model.coef_))
+    intercept = model.intercept_
+
+    result = {
+        'model_id': model_id,
+        'train_score': train_score,
+        'test_score': test_score,
+        'coefficients': coefficients,
+        'intercept': intercept
+    }
     return result
