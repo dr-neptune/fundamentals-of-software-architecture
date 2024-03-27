@@ -519,3 +519,31 @@ topology do not advertise what they did to the rest of the system.
 |---------------------------------+------------------------------------|
 
 * Space-Based Architecture Style
+
+The /space-based/ architecture is specifically designed to address
+problems involving high scalability, elasticity, and high concurrency
+issues.
+
+High scalability/elasticity/performance are achieved by removing the
+central database as a synchronous constraint in the system and instead
+leveraging replicated in-memory data grids. App data is kept in-memory
+and replicated among all the active processing units.
+
+There are several architectures that make up a space-based
+architecture:
+- a processing unit containing the app code
+- data pumps to asynchronously send updated data to the database
+- data writers that perform the updates from the data pumps
+- data readers that read database data and deliver it to processing
+  units upon startup
+
+Uses lots of data caching with each processing unit. Great for rapidly
+scaling up to a very large load, and then scaling back down when the
+load isn't there. Useful for things like concert ticket systems /
+auction sites.
+
+* Orchestration-Driven Service-Oriented Architecture
+
+basically a layered architecture, but the files in each are really
+services. Bad because deep coupling and many changes needed for every
+small change
