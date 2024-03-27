@@ -517,8 +517,7 @@ topology do not advertise what they did to the rest of the system.
 | Better reaction to situational  |                                    |
 | awareness                       |                                    |
 |---------------------------------+------------------------------------|
-
-* Space-Based Architecture Style
+** Space-Based Architecture Style
 
 The /space-based/ architecture is specifically designed to address
 problems involving high scalability, elasticity, and high concurrency
@@ -542,8 +541,94 @@ scaling up to a very large load, and then scaling back down when the
 load isn't there. Useful for things like concert ticket systems /
 auction sites.
 
-* Orchestration-Driven Service-Oriented Architecture
+** Orchestration-Driven Service-Oriented Architecture
 
 basically a layered architecture, but the files in each are really
 services. Bad because deep coupling and many changes needed for every
 small change
+
+** Microservices Architecture
+
+Microservices is heavily inspired by ideas in DDD. Particularly
+bounded context, a decoupling style.
+
+
+#+DOWNLOADED: screenshot @ 2024-03-27 08:32:41
+[[file:Part_II:_Architecture_Styles/2024-03-27_08-32-41_screenshot.png]]
+
+Each service runs in its own process. Performance is often the
+negative side effect of the distributed nature of
+microservices. Network calls take much longer than method calls.
+
+*** Granularity
+
+The purpose of service boundaries in microservices is to capture a
+domain or workflow. Some guidelines for finding the appropriate
+boundaries:
+
+- Purpose
+  - each service should be extremely functionally cohesive,
+    contributing one significant behavior on behalf of the overall application
+- Transactions
+  - Bounded contexts are business workflows, and often the entities
+    that need to cooperate in a transaction show architects a good
+    service boundary. Transactions cause issues in distributed
+    architectures, so if architects can avoid them, they generate
+    better designs.
+- Choreography
+  - If an architect builds a set of services that offer excellent
+    domain isolation, yet require extensive communication to function,
+    the architect may consider bundling these services back into a
+    larger service to avoid the communication overhead.
+
+*** Data Isolation
+
+Microservices tries to avoid all kinds of coupling, including shared
+schemas and databases used as integration parts. This level of data
+isolation creates headaches and provides opportunities. A single
+service team can choose a more suitable database without affecting
+other teams.
+
+*** Operational Reuse
+
+Given that microservices prefer duplication to coupling, architects
+can handle the parts of architecture that benefit from coupling by
+using the sidecar pattern. Basically, you embed the reused code across
+all services. Once teams know that each service includes a common
+sidecar, they can build a service mesh, allowing unified control
+across the architecture for concerns like logging and monitoring.
+
+*** Communication
+
+Fundamentally, architects must decide on synchronous or asynchronous
+communication. Microservice architectures typically utilize
+protocol-aware heterogeneous interoperability:
+
+- Protocol-aware: Because microservices usually don't include a
+  centralized integration hub to avoid operational coupling, each
+  service should know how to call other services.
+- Heterogeneous: microservices fully support polyglot environments,
+  where different services use different platforms.
+- Interoperability: Services commonly call other services via the
+  network to collaborate and send/receive information.
+
+*** Choreography and Orchestration
+
+Choreography utilizes the same communication style as a broker
+event-driven architecture -- no central coordinator exists in this
+architecture, respecting the bounded context philosophy.
+
+*** Transactions and Sagas
+
+The best advice for architects who want to do transactions across
+services is: don't! Fix the granularity of the components
+instead. Often, architects who build microservice architectures who
+then find a need to wire them together with transactions have gone too
+granular in their design.
+
+A few transactions across services is sometimes necessary; if it's the
+dominant feature of the architecture, mistakes were made!
+
+
+#+DOWNLOADED: screenshot @ 2024-03-27 08:57:23
+[[file:Part_II:_Architecture_Styles/2024-03-27_08-57-23_screenshot.png]]
