@@ -58,11 +58,170 @@ just recognizes this and does it sooner - Mark Richards
 Balancing a portfolio of knowledge regarding depth vs breadth is
 something every developer should consider throughout their career.
 ** Modularity
+
+We use modularity to describe a logical grouping of related code,
+which could be a group of classes in  an object-oriented language or
+functions in a structured or functional language. For discussion about
+architecture, we use modularity as a general term to denote a related
+grouping of code: classes, functions, or any other grouping.
+*** Measuring Modularity
+**** Cohesion
+Cohesion refers to what extent the parts of a module should be
+contained within the same module. It is a measure of how related the
+parts are to one another.
+
+A measure:
+
+LCOM - The sum of sets of methods not shared via sharing fields
+
+**** Coupling
+
+Method calls and returns form a call graph, so we can analyze using
+graph theory.
+
+*Afferent* coupling measures the number of /incoming/ connections to a
+code artifact and *Efferent* coupling measures the number of /outgoing/ connections.
+
+**** Abstractness, Instability, and Distance from the Main Sequence
+
+Abstractness: $A = \frac{\Sigma m^a}{\Sigma m^c}$
+
+where:
+- $m^a$ represents abstract elements
+- $m^c$ represents concrete elements
+
+  For example, an application with 5000 lines of code all in one main
+  method would have 1 abstract element and 5000 concrete elements for
+  an abstractness of 1/5000.
+
+Instability: $I = \frac{C^e}{C^e + C^a}$
+
+Where:
+- $C^e$ represents efferent (or outgoing) coupling
+- $C^a$ represents afferent (or incoming) coupling
+
+  The instability metric determines the volatility of a code base. A
+  code base that exhibits high degrees of instability breaks more
+  easily when changed because of high coupling.
+
+**** Distance from the Main Sequence
+
+This is a derived measure based on instability and abstractness
+
+$D = |A + I - 1|$
+
+*** Connascence
+
+Two components are connascent if a change in one would require the
+other to be modified in order to maintain the overall correctness of
+the system - Meilir Page-Jones
+
+*Static Connascence* refers to source-code level coupling (as opposed to
+execution-time coupling). It is a refinement of the afferent and
+efferent couplings.
+
+*Connascence of X*
+Multiple components must agree on the X of an entity
+X:
+- name
+- type
+- meaning / convention
+- position
+- algorithm
+
+The other type of connascence is *dynamic connascence*, which analyzes
+calls at runtime.
+
+- Execution (order of execution of multiple components is important)
+- Timing
+- Values (occurs when several values relate to one another and must
+  change together)
+- Identity (multiple components must reference the same entity)
+
 ** Architecture Characteristics Defined
+
+An architecture characteristic meets 3 criteria:
+- Specifies a nondomain design consideration
+  - specify operational and design criteria for success, concerning
+    how to implement the requirements and why certain choices were
+    made.
+- Influences some structural aspect of the design
+  - Does the architecture require special structural consideration to
+    succeed?
+- Is critical or important to application success
+  - Apps could support a large number of architecture characteristics,
+    but the shouldn't. Support for each architecure characteristic
+    adds complexity to the design. A critical job for architects lies
+    in choosing the fewest architecture characteristics rather than
+    the most possible.
+
+*** Architectural Characteristics (Partially) Listed
+
+**** Operational Characteristics
+
+| Term               | Definition                                                                                                          |
+|--------------------+---------------------------------------------------------------------------------------------------------------------|
+| Availability       | How long the system will need to be available (if 24/7, steps need to be in place to allow the system to be up and running quickly in case of any failure). |
+| Continuity         | Disaster recovery capability.                                                                                       |
+| Performance        | Includes stress testing, peak analysis, analysis of the frequency of functions used, capacity required, and response times. Performance acceptance sometimes requires an exercise of its own, taking months to complete. |
+| Recoverability     | Business continuity requirements (e.g., in case of a disaster, how quickly is the system required to be on-line again?). This will affect the backup strategy and requirements for duplicated hardware. |
+| Reliability/Safety | Assess if the system needs to be fail-safe, or if it is mission critical in a way that affects lives. If it fails, will it cost the company large sums of money? |
+| Robustness         | Ability to handle error and boundary conditions while running if the internet connection goes down or if there’s a power outage or hardware failure. |
+| Scalability        | Ability for the system to perform and operate as the number of users or requests increases.                         |
+
+**** Structural Characteristics
+
+| Term                  | Definition                                                                                                          |
+|-----------------------+---------------------------------------------------------------------------------------------------------------------|
+| Configurability       | Ability for the end users to easily change aspects of the software’s configuration (through usable interfaces).     |
+| Extensibility         | How important it is to plug new pieces of functionality in.                                                         |
+| Installability        | Ease of system installation on all necessary platforms.                                                             |
+| Leverageability/Reuse | Ability to leverage common components across multiple products.                                                     |
+| Localization          | Support for multiple languages on entry/query screens in data fields; on reports, multibyte character requirements and units of measure or currencies. |
+| Maintainability       | How easy it is to apply changes and enhance the system?                                                             |
+| Portability           | Does the system need to run on more than one platform? (For example, does the frontend need to run against Oracle as well as SAP DB?) |
+| Supportability        | What level of technical support is needed by the application? What level of logging and other facilities are required to debug errors in the system? |
+| Upgradeability        | Ability to easily/quickly upgrade from a previous version of this application/solution to a newer version on servers and clients. |
+
+**** Cross-Cutting Characteristics
+
+| Term                     | Definition                                                                                                          |
+|--------------------------+---------------------------------------------------------------------------------------------------------------------|
+| Accessibility            | Access to all your users, including those with disabilities like colorblindness or hearing loss.                    |
+| Archivability            | Will the data need to be archived or deleted after a period of time? (For example, customer accounts are to be deleted after three months or marked as obsolete and archived to a secondary database for future access.) |
+| Authentication           | Security requirements to ensure users are who they say they are.                                                    |
+| Authorization            | Security requirements to ensure users can access only certain functions within the application (by use case, subsystem, webpage, business rule, field level, etc.). |
+| Legal                    | What legislative constraints is the system operating in (data protection, Sarbanes Oxley, GDPR, etc.)? What reservation rights does the company require? Any regulations regarding the way the application is to be built or deployed? |
+| Privacy                  | Ability to hide transactions from internal company employees (encrypted transactions so even DBAs and network architects cannot see them). |
+| Security                 | Does the data need to be encrypted in the database? Encrypted for network communication between internal systems? What type of authentication needs to be in place for remote user access? |
+| Supportability           | What level of technical support is needed by the application? What level of logging and other facilities are required to debug errors in the system? |
+| Usability/Serviceability | Level of training required for users to achieve their goals with the application/solution. Usability requirements need to be treated as seriously as any other architectural issue. |
+
+
 ** Identifying Architectural Characteristics
+
+An architect uncovers architecture characteristics in at least 3 ways
+by extracting from:
+- domain concerns
+- requirements
+- implicit domain knowledge
+
+Don't obsess over the number of characteristics, but rather the
+motivation to keep design simple.
+
+Many architects and domain stakeholders want to prioritize the final
+list of architecture characteristics that the app or system must
+support. While this is desirable, in most cases it is a fool's errand
+and will not only waste time, but also produce a lot of unnecessary
+frustration and disagreement with the key stakeholders.
+
+A better approach is to have the domain stakeholders select the top 3
+most important characterstics from the final list (in any order).
+
 ** Measuring and Governing Architecture Characteristics
 ** Scope of Architecture Characteristics
 ** Component-based Thinking
+
 
 * Part II: Architecture Styles
 
@@ -217,29 +376,7 @@ each layer. Every layered architecture has some sinkholes. Use the
 #+DOWNLOADED: screenshot @ 2024-03-24 15:46:22
 [[file:Part_II:_Architecture_Styles/2024-03-24_15-46-22_screenshot.png]]
 
-** 18. Choosing the Appropriate Architecture Style
-
-*** Decision Criteria
-
-- The domain
-- Architecture characteristics that impact structure
-- Data architecture
-- Organizational factors
-- Knowledge of process, teams, and operational concerns
-- Domain/architecture isomorphism
-
-Taking these things into acount, the architext must make several
-determinations:
-
-- Monolith vs. Distributed
-- Where should data live?
-- What communication styles between services -- synchronous or
-  asynchronous?
-  - Because synchronous communication presents fewer design,
-    implementation, and debugging challenges, architects should
-    default to synchronous when possible and use asynchronous when
-    necessary.
-** 11. Pipeline Architecture Style
+** Pipeline Architecture Style
 
 This is the underlying principle behind shells. Many tools that
 utilize mapreduce follow this basic topology.
@@ -632,3 +769,25 @@ dominant feature of the architecture, mistakes were made!
 
 #+DOWNLOADED: screenshot @ 2024-03-27 08:57:23
 [[file:Part_II:_Architecture_Styles/2024-03-27_08-57-23_screenshot.png]]
+** Choosing the Appropriate Architecture Style
+
+*** Decision Criteria
+
+- The domain
+- Architecture characteristics that impact structure
+- Data architecture
+- Organizational factors
+- Knowledge of process, teams, and operational concerns
+- Domain/architecture isomorphism
+
+Taking these things into acount, the architext must make several
+determinations:
+
+- Monolith vs. Distributed
+- Where should data live?
+- What communication styles between services -- synchronous or
+  asynchronous?
+  - Because synchronous communication presents fewer design,
+    implementation, and debugging challenges, architects should
+    default to synchronous when possible and use asynchronous when
+    necessary.
