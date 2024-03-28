@@ -219,9 +219,86 @@ A better approach is to have the domain stakeholders select the top 3
 most important characterstics from the final list (in any order).
 
 ** Measuring and Governing Architecture Characteristics
+
+This chapter focuses on concretely defining some of the more common
+architecture characteristics and building governance mechanisms for
+them.
+
+Several common problems exist around the definition of architecture
+characteristics in organizations:
+
+- They aren't physics
+  - definitions are all over the place
+- Wildly varying definitions
+  - different departments may disagree on the definition of critical
+    features such as performance.
+- Too composite
+  - Many desirable architecture characteristics comprise many others
+    at a smaller scale.
+
+Architecture fitness function
+- Any mechanism that provides an objective integrity assessment of
+  some architecture characteristic or combination of architecture
+  characteristics.
+
 ** Scope of Architecture Characteristics
+
+Architecture Quantum
+An independently deployable artifact with high functional cohesion and
+synchronous connascence
+
+- independently deployable
+  - includes all necessary components to function independently from
+    other parts of the architecture
+- high functional cohesion
+  - how well the contained code is unified in purpose
+- synchronous connascence
+  - this implies synchronous calls within an application context or
+    between distributed services that form the architecture quantum.
+    - if one service calls another, and one is more scalable than the
+      other, timeouts and other reliability concerns will occur.
+
 ** Component-based Thinking
 
+In this chapter, we discuss architectural considerations around
+components, ranging from scope to discovery.
+
+Typically, the architect refines, manages, and governs components
+within an architecture. They must identify components as one of the
+first tasks in a new project. Before they can do that, they must know
+how to partition the architecture.
+
+*Domain Partitioning*
+
+separates top-level components by workflows and/or domains
+
+Advantages
+- modeled more closely to how the business functions rather than an
+  implementation detail.
+- Easier to utilize the inverse Conway maneuver to build
+  cross-functional teams around domains.
+- Aligns more closely with the modular monolith and microservices
+  architecture styles
+- Message flow matches the domain problem
+- Easy to migrate data and components to distributed architecture
+
+Disadvantage
+- Customization code appears in multiple places
+
+*Technical Partitioning*
+separates top-level components based on technical capabilities rather
+than discrete workflows.
+
+Advantages
+- clearly separates customization code
+- aligns more closely to the layered architecture pattern
+
+Disadvantages
+- Higher degree of global coupling. Changes to either the common or
+  local components will likely affect all the other components
+- Developers may have to duplicate domain concepts in both common and
+  local layers
+- Typically higher coupling at the data level.
 
 * Part II: Architecture Styles
 
