@@ -868,3 +868,49 @@ determinations:
     implementation, and debugging challenges, architects should
     default to synchronous when possible and use asynchronous when
     necessary.
+
+* Part III: Techniques and Soft Skills
+
+** Architecture Decisions
+
+The 3 major architecture anti-patterns are:
+- cover your assets
+  - occurs when the architect avoids or defers making an architecture
+    decision out of fear of making the wrong choice.
+- groundhog day
+  - people don't know why a decision was made, so it keeps getting
+    dicussed over and over.
+- email driven architecture
+  - where people lose, forget, or don't know how an architecture
+    decision has been made and therefore cannot possibly implement it.
+
+ADR Format
+- Title
+- Status
+- Context
+- Decision
+- Consequences
+- Compliance
+- Notes
+
+** Analyzing Architecture Risk
+
+By continually analyzing risk, the architect can address deficiencies
+within the architecture and take corrective action to mitigate the
+risk.
+
+The architect gauges the risk of each component based on it's ilities
+
+** Diagramming and Presenting Architecture
+
+These guys are literally talking about switching between slides. Talk
+about f l u f f. Pretty wild for a $70 book
+
+** Making Teams Effective
+
+Lever the control an architect has based on timelines and various
+other factors like seniority of teams and cohesion.
+
+Checklists are helpful to ensure key steps in a process aren't missed.
+
+** Negotiation and Leadership Skills
