@@ -914,3 +914,19 @@ other factors like seniority of teams and cohesion.
 Checklists are helpful to ensure key steps in a process aren't missed.
 
 ** Negotiation and Leadership Skills
+
+don't hug your coworkers regularly (lol)
+hang with developers
+f l0 0f chapter
+
+** Developing a Career Path
+
+20-minute rule: devote /at least/ 20 minutes a day to career development.
+
+The authors strongly recommend leveraging the 20-minute rule first
+thing in the morning, as the day is starting.
+
+ignore the march of technology at your peril.
+
+Practice is the proven way to build skills and become better at
+anything in life, including architecture.
